@@ -1,1 +1,1 @@
-# 77-uz/API
+# 77-uz/API Online store
