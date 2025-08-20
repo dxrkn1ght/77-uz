@@ -6,6 +6,25 @@ from django.urls import reverse
 from django.db.models import Count
 from django.contrib.admin import SimpleListFilter
 from .models import User, SellerProfile
+from apps.common.models import Address
+
+try:
+    from modeltranslation.admin import TabbedTranslationAdmin
+
+    TRANSLATION_AVAILABLE = True
+except ImportError:
+    TabbedTranslationAdmin = admin.ModelAdmin
+    TRANSLATION_AVAILABLE = False
+
+
+class AddressInline(admin.StackedInline):
+    """Inline for managing user addresses"""
+    model = Address
+    extra = 1
+    fields = ('name', 'lat', 'long')
+    verbose_name = _('Address')
+    verbose_name_plural = _('Addresses')
+
 
 class RoleFilter(SimpleListFilter):
     """Custom filter for user roles"""
@@ -20,6 +39,7 @@ class RoleFilter(SimpleListFilter):
             return queryset.filter(role=self.value())
         return queryset
 
+
 class SellerProfileInline(admin.StackedInline):
     """Inline for seller profile"""
     model = SellerProfile
@@ -27,17 +47,18 @@ class SellerProfileInline(admin.StackedInline):
     fields = ('project_name', 'category', 'is_approved')
     readonly_fields = ('created_at', 'updated_at')
 
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = [
-        'phone_number', 'full_name', 'role_badge', 'is_active', 
-        'is_verified', 'created_at', 'ads_count'
+        'phone_number', 'full_name', 'profile_photo_preview', 'address_name',
+        'role_badge', 'is_active', 'is_verified', 'created_at', 'ads_count'
     ]
     list_filter = [RoleFilter, 'is_active', 'is_verified', 'created_at']
-    search_fields = ['phone_number', 'full_name']
+    search_fields = ['phone_number', 'full_name', 'address__name']
     ordering = ['-created_at']
     list_per_page = 25
-    
+
     fieldsets = (
         (_('Authentication'), {
             'fields': ('phone_number', 'password'),
@@ -56,24 +77,45 @@ class UserAdmin(BaseUserAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     add_fieldsets = (
         (_('Create New User'), {
             'classes': ('wide',),
             'fields': ('phone_number', 'password1', 'password2', 'role', 'full_name'),
         }),
     )
-    
+
     readonly_fields = ['created_at', 'updated_at', 'last_login']
-    inlines = [SellerProfileInline]
-    
+    inlines = [SellerProfileInline, AddressInline]
+
+    def profile_photo_preview(self, obj):
+        """Display profile photo thumbnail"""
+        if obj.profile_photo:
+            return format_html(
+                '<img src="{}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 2px solid #ddd;">',
+                obj.profile_photo.url
+            )
+        return format_html(
+            '<div style="width: 40px; height: 40px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; font-size: 12px; color: #6c757d;">No Photo</div>'
+        )
+
+    profile_photo_preview.short_description = _('Photo')
+
+    def address_name(self, obj):
+        """Display address name"""
+        if obj.address:
+            return obj.address.name
+        return '-'
+
+    address_name.short_description = _('Address')
+
     def role_badge(self, obj):
         """Display role as colored badge"""
         colors = {
             'super_admin': '#dc3545',  # Red
-            'admin': '#fd7e14',        # Orange
-            'seller': '#198754',       # Green
-            'user': '#6c757d'          # Gray
+            'admin': '#fd7e14',  # Orange
+            'seller': '#198754',  # Green
+            'user': '#6c757d'  # Gray
         }
         color = colors.get(obj.role, '#6c757d')
         return format_html(
@@ -81,8 +123,9 @@ class UserAdmin(BaseUserAdmin):
             'border-radius: 3px; font-size: 11px; font-weight: bold;">{}</span>',
             color, obj.get_role_display()
         )
+
     role_badge.short_description = _('Role')
-    
+
     def ads_count(self, obj):
         """Display number of ads for sellers"""
         if obj.role == 'seller':
@@ -92,32 +135,37 @@ class UserAdmin(BaseUserAdmin):
                 return format_html('<a href="{}">{} ads</a>', url, count)
             return '0 ads'
         return '-'
+
     ads_count.short_description = _('Ads Count')
-    
+
     actions = ['activate_users', 'deactivate_users', 'verify_users']
-    
+
     def activate_users(self, request, queryset):
         """Activate selected users"""
         updated = queryset.update(is_active=True)
         self.message_user(request, f'{updated} users activated successfully.')
+
     activate_users.short_description = _('Activate selected users')
-    
+
     def deactivate_users(self, request, queryset):
         """Deactivate selected users"""
         updated = queryset.update(is_active=False)
         self.message_user(request, f'{updated} users deactivated successfully.')
+
     deactivate_users.short_description = _('Deactivate selected users')
-    
+
     def verify_users(self, request, queryset):
         """Verify selected users"""
         updated = queryset.update(is_verified=True)
         self.message_user(request, f'{updated} users verified successfully.')
+
     verify_users.short_description = _('Verify selected users')
+
 
 @admin.register(SellerProfile)
 class SellerProfileAdmin(admin.ModelAdmin):
     list_display = [
-        'user_phone', 'user_name', 'project_name', 'category', 
+        'user_phone', 'user_name', 'project_name', 'category',
         'approval_status', 'created_at'
     ]
     list_filter = ['is_approved', 'category', 'created_at']
@@ -126,7 +174,7 @@ class SellerProfileAdmin(admin.ModelAdmin):
     ]
     raw_id_fields = ['user', 'category']
     list_per_page = 25
-    
+
     fieldsets = (
         (_('Seller Information'), {
             'fields': ('user', 'project_name', 'category'),
@@ -141,17 +189,19 @@ class SellerProfileAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     readonly_fields = ['created_at', 'updated_at']
-    
+
     def user_phone(self, obj):
         return obj.user.phone_number
+
     user_phone.short_description = _('Phone Number')
-    
+
     def user_name(self, obj):
         return obj.user.full_name or '-'
+
     user_name.short_description = _('Full Name')
-    
+
     def approval_status(self, obj):
         """Display approval status as badge"""
         if obj.is_approved:
@@ -164,10 +214,11 @@ class SellerProfileAdmin(admin.ModelAdmin):
                 '<span style="background-color: #ffc107; color: black; padding: 3px 8px; '
                 'border-radius: 3px; font-size: 11px; font-weight: bold;">Pending</span>'
             )
+
     approval_status.short_description = _('Status')
-    
+
     actions = ['approve_sellers', 'reject_sellers']
-    
+
     def approve_sellers(self, request, queryset):
         """Approve selected sellers"""
         updated = queryset.update(is_approved=True)
@@ -175,10 +226,12 @@ class SellerProfileAdmin(admin.ModelAdmin):
         user_ids = queryset.values_list('user_id', flat=True)
         User.objects.filter(id__in=user_ids).update(is_verified=True)
         self.message_user(request, f'{updated} sellers approved successfully.')
+
     approve_sellers.short_description = _('Approve selected sellers')
-    
+
     def reject_sellers(self, request, queryset):
         """Reject selected sellers"""
         updated = queryset.update(is_approved=False)
         self.message_user(request, f'{updated} sellers rejected.')
+
     reject_sellers.short_description = _('Reject selected sellers')

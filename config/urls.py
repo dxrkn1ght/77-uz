@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
@@ -6,16 +7,15 @@ from drf_yasg.generators import OpenAPISchemaGenerator
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from config.settings import (
-    base as settings,
-    django_settings_module,
-)
+DJANGO_SETTINGS_MODULE = getattr(settings, "DJANGO_SETTINGS_MODULE", "development")
 
 
 class BothHttpAndHttpsSchemaGenerator(OpenAPISchemaGenerator):
     def get_schema(self, request=None, public=False):
         schema = super().get_schema(request, public)
-        schema.schemes = ["http"] if django_settings_module == "development" else ["https"]
+        schema.schemes = (
+            ["http"] if DJANGO_SETTINGS_MODULE == "development" else ["https"]
+        )
         return schema
 
 
@@ -32,24 +32,19 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
     generator_class=BothHttpAndHttpsSchemaGenerator,
 )
-
 urlpatterns = [
-    path("default-admin-panel/", admin.site.urls),
+    path("admin/", admin.site.urls),
 ]
 
 urlpatterns += [
-    path("api/v1/common/", include("common.urls"), name="common"),
-    path("api/v1/accounts/", include("accounts.urls"), name="accounts"),
-    path("api/v1/store/", include("store.urls"), name="store"),
+    path("api/v1/common/", include("apps.common.urls"), name="common"),
+    path("api/v1/accounts/", include("apps.accounts.urls"), name="accounts"),
+    path("api/v1/store/", include("apps.store.urls"), name="store"),
 ]
 
-if django_settings_module == "development":
+if DJANGO_SETTINGS_MODULE == "development":
     urlpatterns += [
         path("__debug__/", include("debug_toolbar.urls")),
-    ]
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += [
         path(
             "swagger/",
             schema_view.with_ui("swagger", cache_timeout=0),
@@ -65,8 +60,6 @@ if django_settings_module == "development":
             schema_view.without_ui(cache_timeout=0),
             name="schema-json",
         ),
-        path("chaining/", include("smart_selects.urls")),
     ]
-
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

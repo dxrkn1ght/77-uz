@@ -37,3 +37,4 @@ setup: install migrate translations admin
 	@echo "Project setup completed!"
 	@echo "Admin user: +998901234567 / admin123"
 	@echo "Run: python manage.py runserver"
+

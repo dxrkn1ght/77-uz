@@ -83,6 +83,7 @@ API ikki tilda ishlaydi:
 - `uz` - O'zbek tili (default)
 - `ru` - Rus tili
 
+
 Accept-Language header orqali tilni belgilang:
 \`\`\`
 Accept-Language: ru

@@ -5,6 +5,7 @@ from apps.common.models import Address
 from apps.store.models import Category, Ad, AdPhoto
 from apps.accounts.models import SellerProfile
 
+
 User = get_user_model()
 
 class AddressFactory(DjangoModelFactory):

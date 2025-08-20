@@ -1,23 +1,20 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-class BaseModel(models.Model):
-    """Base model with common fields for all models"""
-    created_at = models.DateTimeField(_('Created at'), auto_now_add=True)
-    updated_at = models.DateTimeField(_('Updated at'), auto_now=True)
-    
-    class Meta:
-        abstract = True
+from django.conf import settings
+from .models_base import BaseModel
 
 class Address(BaseModel):
-    """Address model for users and sellers"""
-    name = models.CharField(_('Name'), max_length=250)
-    lat = models.FloatField(_('Latitude'), null=True, blank=True)
-    long = models.FloatField(_('Longitude'), null=True, blank=True)
-    
-    class Meta:
-        verbose_name = _('Address')
-        verbose_name_plural = _('Addresses')
-        
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='addresses'
+    )
+    name = models.CharField(_('Name'), max_length=255, blank=True, null=True)
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
+    lat = models.FloatField(null=True, blank=True)
+    long = models.FloatField(null=True, blank=True)
+
     def __str__(self):
-        return self.name
+        return f"{self.street}, {self.city}"
