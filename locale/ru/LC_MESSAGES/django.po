@@ -1,5 +1,289 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
+"Project-Id-Version: 77.uz Marketplace\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-15 10:30+0500\n"
+"PO-Revision-Date: 2024-01-15 10:30+0500\n"
+"Last-Translator: \n"
+"Language-Team: Russian\n"
 "Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-# placeholder translations
+# Common terms
+msgid "Created at"
+msgstr "Создано"
+
+msgid "Updated at"
+msgstr "Обновлено"
+
+msgid "Name"
+msgstr "Название"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Price"
+msgstr "Цена"
+
+msgid "Active"
+msgstr "Активный"
+
+msgid "Inactive"
+msgstr "Неактивный"
+
+msgid "Status"
+msgstr "Статус"
+
+# User related
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "Full name"
+msgstr "Полное имя"
+
+msgid "Phone number"
+msgstr "Номер телефона"
+
+msgid "Profile photo"
+msgstr "Фото профиля"
+
+msgid "Role"
+msgstr "Роль"
+
+msgid "Super Admin"
+msgstr "Супер Админ"
+
+msgid "Admin"
+msgstr "Администратор"
+
+msgid "Seller"
+msgstr "Продавец"
+
+msgid "Is active"
+msgstr "Активен"
+
+msgid "Is verified"
+msgstr "Подтвержден"
+
+msgid "Address"
+msgstr "Адрес"
+
+msgid "Addresses"
+msgstr "Адреса"
+
+# Store related
+msgid "Category"
+msgstr "Категория"
+
+msgid "Categories"
+msgstr "Категории"
+
+msgid "Parent Category"
+msgstr "Родительская категория"
+
+msgid "Icon"
+msgstr "Иконка"
+
+msgid "Order"
+msgstr "Порядок"
+
+msgid "Advertisement"
+msgstr "Объявление"
+
+msgid "Advertisements"
+msgstr "Объявления"
+
+msgid "Slug"
+msgstr "Слаг"
+
+msgid "Name (Uzbek)"
+msgstr "Название (Узбекский)"
+
+msgid "Name (Russian)"
+msgstr "Название (Русский)"
+
+msgid "Description (Uzbek)"
+msgstr "Описание (Узбекский)"
+
+msgid "Description (Russian)"
+msgstr "Описание (Русский)"
+
+msgid "Seller"
+msgstr "Продавец"
+
+msgid "Is Featured"
+msgstr "Рекомендуемый"
+
+msgid "View Count"
+msgstr "Количество просмотров"
+
+msgid "Published At"
+msgstr "Опубликовано"
+
+msgid "Ad Photo"
+msgstr "Фото объявления"
+
+msgid "Ad Photos"
+msgstr "Фото объявлений"
+
+msgid "Image"
+msgstr "Изображение"
+
+msgid "Ad Like"
+msgstr "Лайк объявления"
+
+msgid "Ad Likes"
+msgstr "Лайки объявлений"
+
+msgid "Ad View"
+msgstr "Просмотр объявления"
+
+msgid "Ad Views"
+msgstr "Просмотры объявлений"
+
+msgid "IP Address"
+msgstr "IP адрес"
+
+# Seller Profile
+msgid "Seller Profile"
+msgstr "Профиль продавца"
+
+msgid "Seller Profiles"
+msgstr "Профили продавцов"
+
+msgid "Project name"
+msgstr "Название проекта"
+
+msgid "Is approved"
+msgstr "Одобрен"
+
+# Admin actions
+msgid "Activate selected users"
+msgstr "Активировать выбранных пользователей"
+
+msgid "Deactivate selected users"
+msgstr "Деактивировать выбранных пользователей"
+
+msgid "Verify selected users"
+msgstr "Подтвердить выбранных пользователей"
+
+msgid "Approve selected sellers"
+msgstr "Одобрить выбранных продавцов"
+
+msgid "Reject selected sellers"
+msgstr "Отклонить выбранных продавцов"
+
+msgid "Activate selected categories"
+msgstr "Активировать выбранные категории"
+
+msgid "Deactivate selected categories"
+msgstr "Деактивировать выбранные категории"
+
+msgid "Activate selected ads"
+msgstr "Активировать выбранные объявления"
+
+msgid "Deactivate selected ads"
+msgstr "Деактивировать выбранные объявления"
+
+msgid "Feature selected ads"
+msgstr "Рекомендовать выбранные объявления"
+
+msgid "Unfeature selected ads"
+msgstr "Убрать из рекомендуемых выбранные объявления"
+
+# Admin fieldsets
+msgid "Authentication"
+msgstr "Аутентификация"
+
+msgid "Personal Information"
+msgstr "Личная информация"
+
+msgid "Permissions & Role"
+msgstr "Разрешения и роль"
+
+msgid "Important Dates"
+msgstr "Важные даты"
+
+msgid "Create New User"
+msgstr "Создать нового пользователя"
+
+msgid "Seller Information"
+msgstr "Информация о продавце"
+
+msgid "Approval Status"
+msgstr "Статус одобрения"
+
+msgid "Timestamps"
+msgstr "Временные метки"
+
+msgid "Category Information"
+msgstr "Информация о категории"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Advertisement Information"
+msgstr "Информация об объявлении"
+
+msgid "Details"
+msgstr "Детали"
+
+msgid "Statistics"
+msgstr "Статистика"
+
+msgid "Address Information"
+msgstr "Информация об адресе"
+
+# Display names
+msgid "Ads Count"
+msgstr "Количество объявлений"
+
+msgid "Subcategories"
+msgstr "Подкategории"
+
+msgid "Active Ads"
+msgstr "Активные объявления"
+
+msgid "Likes"
+msgstr "Лайки"
+
+msgid "Preview"
+msgstr "Предпросмотр"
+
+# Validation messages
+msgid "Phone number must be in format +1234567890"
+msgstr "Номер телефона должен быть в формате +1234567890"
+
+msgid "HTML tags are not allowed"
+msgstr "HTML теги не разрешены"
+
+msgid "Script content is not allowed"
+msgstr "Скрипт содержимое не разрешено"
+
+msgid "File size cannot exceed 10MB"
+msgstr "Размер файла не может превышать 10МБ"
+
+msgid "Only JPEG, PNG, GIF, and WebP images are allowed"
+msgstr "Разрешены только изображения JPEG, PNG, GIF и WebP"
+
+msgid "Password confirmation does not match"
+msgstr "Подтверждение пароля не совпадает"
+
+msgid "Invalid phone number or password"
+msgstr "Неверный номер телефона или пароль"
+
+msgid "User account is disabled"
+msgstr "Учетная запись пользователя отключена"
+
+msgid "Phone number and password are required"
+msgstr "Номер телефона и пароль обязательны"

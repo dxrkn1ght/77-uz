@@ -1,30 +1,35 @@
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-from rest_framework import permissions
-from apps.catalog.views import ProductViewSet
-from apps.orders.views import OrderViewSet
-from apps.accounts.views import AuthViewSet
-
-router = DefaultRouter()
-router.register("products", ProductViewSet, basename="product")
-router.register("orders", OrderViewSet, basename="order")
-router.register("auth", AuthViewSet, basename="auth")
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Mercato API",
-        default_version="v1",
-        description="Swagger docs for online marketplace",
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
+from django.conf import settings
+from django.conf.urls.static import static
+from drf_spectacular.views import (
+    SpectacularAPIView, 
+    SpectacularSwaggerView, 
+    SpectacularRedocView
 )
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include(router.urls)),
-    path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
+    path('admin/', admin.site.urls),
+    
+    # API endpoints
+    path('api/v1/', include('apps.accounts.urls')),
+    path('api/v1/', include('apps.store.urls')),
+    path('api/v1/', include('apps.common.urls')),
+    
+    # API Documentation
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
+    # Root redirect to docs
+
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Custom admin site configuration
+admin.site.site_header = "77.uz Marketplace Admin"
+admin.site.site_title = "77.uz Admin"
+admin.site.index_title = "Marketplace Administration"

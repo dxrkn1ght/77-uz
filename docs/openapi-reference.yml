@@ -1,0 +1,2887 @@
+openapi: 3.0.0
+info:
+  title: 77 uz APIS
+  description: Bu hujjat API ro'yxatini ko'rsatadi va ularni tekshirish imkoniyatini beradi
+  contact:
+    email: info@uic.group
+  version: v1
+
+servers:
+  - url: https://admin.77.uz/api/v1
+    description: Ishlab chiqarish serveri
+  - url: http://admin.77.uz/api/v1
+    description: Test serveri
+
+security:
+  - BasicAuth: []
+
+paths:
+  /accounts/edit/:
+    put:
+      tags:
+        - accounts
+      operationId: accounts_edit_update
+      description: Foydalanuvchi profilini yangilash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileEdit'
+            example:
+              full_name: "Aliyev Vali Karimovich"
+              phone_number: "+998901234567"
+              address: 1
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileEdit'
+              example:
+                full_name: "Aliyev Vali Karimovich"
+                phone_number: "+998901234567"
+                profile_photo: "https://admin.77.uz/media/profiles/user_photo.jpg"
+                address: 1
+
+    patch:
+      tags:
+        - accounts
+      operationId: accounts_edit_partial_update
+      description: Foydalanuvchi profilini qisman yangilash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileEdit'
+            example:
+              full_name: "Aliyev Vali Karimovich"
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileEdit'
+
+  /accounts/login/:
+    post:
+      tags:
+        - accounts
+      operationId: accounts_login_create
+      summary: Hisobga kirish
+      description: Foydalanuvchini autentifikatsiya qilish va access tokenlarni qaytarish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+            example:
+              phone_number: "+998901234567"
+              password: "mySecurePassword123"
+      responses:
+        '200':
+          description: Muvaffaqiyatli operatsiya
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJleHAiOjE2MjM5MjQ4MDB9.example"
+                refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyNDUyOTYwMH0.example"
+                user:
+                  id: 123
+                  full_name: "Aliyev Vali Karimovich"
+                  phone_number: "+998901234567"
+        '401':
+          description: Noto'g'ri foydalanuvchi nomi yoki parol
+        '429':
+          description: Juda ko'p so'rovlar
+
+  /accounts/me/:
+    get:
+      tags:
+        - accounts
+      operationId: accounts_me_read
+      description: Joriy foydalanuvchi profilini olish
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+              example:
+                id: 123
+                full_name: "Aliyev Vali Karimovich"
+                phone_number: "+998901234567"
+                profile_photo: "https://admin.77.uz/media/profiles/user_photo.jpg"
+                address:
+                  name: "Toshkent shahar, Chilonzor tumani, Bunyodkor ko'chasi 1-uy"
+                  lat: 41.311081
+                  long: 69.240562
+
+  /accounts/seller/registration/:
+    post:
+      tags:
+        - accounts
+      operationId: accounts_seller_registration_create
+      summary: Sotuvchi ro'yxatdan o'tish arizasini tasdiqlash uchun yuborish
+      description: Sotuvchi sifatida ro'yxatdan o'tish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SellerRegistration'
+            example:
+              full_name: "Karimov Akmal Rustamovich"
+              project_name: "TechnoMart Online Do'koni"
+              category: 7
+              phone_number: "+998971234567"
+              address:
+                name: "Toshkent shahar, Mirobod tumani, Amir Temur ko'chasi 15-uy"
+                lat: 41.299496
+                long: 69.240073
+      responses:
+        '201':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SellerRegistrationResponse'
+              example:
+                id: 4321
+                full_name: "Karimov Akmal Rustamovich"
+                project_name: "TechnoMart Online Do'koni"
+                category_id: 7
+                phone_number: "+998971234567"
+                address: "Toshkent shahar, Mirobod tumani, Amir Temur ko'chasi 15-uy"
+                status: "pending"
+        '400':
+          description: Noto'g'ri ma'lumot
+
+  /accounts/token/refresh/:
+    post:
+      tags:
+        - accounts
+      operationId: accounts_token_refresh_create
+      summary: Token yangilash
+      description: Access tokenni yangilash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenRefresh'
+            example:
+              refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyNDUyOTYwMH0.example"
+      responses:
+        '200':
+          description: Token muvaffaqiyatli yangilandi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefreshResponse'
+              example:
+                access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.newAccessToken.example"
+        '400':
+          description: Token yangilash muvaffaqiyatsiz
+
+  /accounts/token/verify/:
+    post:
+      tags:
+        - accounts
+      operationId: accounts_token_verify_create
+      description: Tokenni tekshirish va uning haqiqiyligini aniqlash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+            example:
+              token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJleHAiOjE2MjM5MjQ4MDB9.example"
+      responses:
+        '200':
+          description: Token haqiqiy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenVerifyResponse'
+              example:
+                valid: true
+                user_id: 123
+        '400':
+          description: Token noto'g'ri yoki muddati tugagan
+
+  /common/pages/:
+    get:
+      tags:
+        - common
+      operationId: common_pages_list
+      description: Statik sahifalar ro'yxatini olish
+      parameters:
+        - name: limit
+          in: query
+          description: Har bir sahifada qaytariladigan natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          description: Natijalarni qaytarish uchun boshlang'ich indeks
+          required: false
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaticPages'
+              example:
+                count: 5
+                next: "https://admin.77.uz/api/v1/common/pages/?limit=10&offset=10"
+                previous: null
+                results:
+                  - slug: "about-us"
+                    title: "Biz haqimizda / О нас"
+                  - slug: "privacy-policy"
+                    title: "Maxfiylik siyosati / Политика конфиденциальности"
+                  - slug: "terms-of-service"
+                    title: "Foydalanish shartlari / Условия использования"
+
+  /common/pages/{slug}/:
+    get:
+      tags:
+        - common
+      operationId: common_pages_read
+      summary: Ma'lum slug bo'yicha statik sahifani olish
+      description: Statik sahifa mazmunini olish
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            format: slug
+            pattern: '^[-a-zA-Z0-9_]+$'
+            example: "about-us"
+      responses:
+        '200':
+          description: Muvaffaqiyatli operatsiya
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaticPageDetail'
+              example:
+                slug: "about-us"
+                title: "Biz haqimizda / О нас"
+                content: "77.uz - O'zbekistondagi eng yirik onlayn bozor. Мы крупнейший онлайн-рынок в Узбекистане."
+                created_at: "2024-01-01T00:00:00Z"
+                updated_at: "2024-01-15T10:30:00Z"
+        '404':
+          description: Statik sahifa topilmadi
+
+  /common/regions-with-districts/:
+    get:
+      tags:
+        - common
+      operationId: common_regions-with-districts_list
+      summary: Viloyatlar va ularning tumanlarini ro'yxatini olish
+      description: Geografik ma'lumotlarni olish
+      parameters:
+        - name: limit
+          in: query
+          description: Har bir sahifada qaytariladigan natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 20
+        - name: offset
+          in: query
+          description: Natijalarni qaytarish uchun boshlang'ich indeks
+          required: false
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Muvaffaqiyatli operatsiya
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegionWithDistricts'
+              example:
+                - id: 1
+                  name: "Toshkent shahar / г. Ташкент"
+                  districts:
+                    - id: 101
+                      name: "Chilonzor tumani / Чиланзарский район"
+                    - id: 102
+                      name: "Mirobod tumani / Мирабадский район"
+                    - id: 103
+                      name: "Yunusobod tumani / Юнусабадский район"
+                - id: 2
+                  name: "Andijon viloyati / Андижанская область"
+                  districts:
+                    - id: 201
+                      name: "Andijon shahar / г. Андижан"
+                    - id: 202
+                      name: "Xo'jaobod tumani / Ходжаабадский район"
+
+  /common/setting/:
+    get:
+      tags:
+        - common
+      operationId: common_setting_read
+      description: Ilova sozlamalarini olish
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Setting'
+              example:
+                phone: "+998712345678"
+                support_email: "support@77.uz"
+                working_hours: "Dushanba-Yakshanba 9:00-21:00 / Пн-Вс 9:00-21:00"
+                app_version: "1.2.3"
+                maintenance_mode: false
+
+  /store/ads/:
+    post:
+      tags:
+        - store
+      operationId: store_ads_create
+      summary: Yangi e'lon yaratish
+      description: Yangi e'lon yaratish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdCreate'
+            example:
+              name_uz: "Samsung Galaxy S24 Ultra 512GB"
+              name_ru: "Samsung Galaxy S24 Ultra 512GB"
+              category: 15
+              description_uz: "Eng so'nggi Samsung Galaxy S24 Ultra, 512GB xotira, S Pen bilan."
+              description_ru: "Новейший Samsung Galaxy S24 Ultra, 512GB памяти, с S Pen."
+              price: 12500000
+              photos: ["https://admin.77.uz/media/products/samsung_s24_1.jpg", "https://admin.77.uz/media/products/samsung_s24_2.jpg"]
+      responses:
+        '201':
+          description: E'lon muvaffaqiyatli yaratildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ad'
+        '400':
+          description: Noto'g'ri so'rov
+
+  /store/ads/{slug}/:
+    get:
+      tags:
+        - store
+      operationId: store_ads_read
+      summary: Bitta e'lonni olish
+      description: Slug bo'yicha e'lonni olish
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            format: slug
+            pattern: '^[-a-zA-Z0-9_]+$'
+            example: "iphone-15-pro-max-256gb-titanium"
+      responses:
+        '200':
+          description: Muvaffaqiyatli operatsiya
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDetail'
+              example:
+                id: 12345
+                name: "iPhone 15 Pro Max 256GB Titanium"
+                slug: "iphone-15-pro-max-256gb-titanium"
+                description: "Yangi iPhone 15 Pro Max, 256GB xotira, titanium rang. Kafolat bilan."
+                price: 15000000
+                photos:
+                  - "https://admin.77.uz/media/products/iphone15_main.jpg"
+                  - "https://admin.77.uz/media/products/iphone15_2.jpg"
+                published_at: "2024-01-15T10:30:00Z"
+                address: "Toshkent shahar, Chilonzor tumani"
+                seller:
+                  id: 456
+                  full_name: "Karimov Akmal"
+                  phone_number: "+998901234567"
+                  profile_photo: "https://admin.77.uz/media/profiles/seller_photo.jpg"
+                category:
+                  id: 15
+                  name: "Telefonlar / Телефоны"
+                is_liked: false
+                view_count: 125
+                updated_time: "2024-01-15T10:30:00Z"
+        '400':
+          description: Noto'g'ri so'rov
+        '404':
+          description: E'lon topilmadi
+
+  /store/categories-with-childs/:
+    get:
+      tags:
+        - store
+      operationId: store_categories-with-childs_list
+      description: Bola kategoriyalar bilan kategoriyalarni olish
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryWithChildren'
+              example:
+                - id: 1
+                  name: "Elektronika / Электроника"
+                  icon: "https://admin.77.uz/media/icons/electronics.svg"
+                  children:
+                    - id: 15
+                      name: "Telefonlar / Телефоны"
+                      icon: "https://admin.77.uz/media/icons/phone.svg"
+                    - id: 16
+                      name: "Noutbuklar / Ноутбуки"
+                      icon: "https://admin.77.uz/media/icons/laptop.svg"
+                    - id: 17
+                      name: "Televizorlar / Телевизоры"
+                      icon: "https://admin.77.uz/media/icons/tv.svg"
+                - id: 2
+                  name: "Kiyim-kechak / Одежда"
+                  icon: "https://admin.77.uz/media/icons/clothing.svg"
+                  children:
+                    - id: 25
+                      name: "Erkaklar kiyimi / Мужская одежда"
+                      icon: "https://admin.77.uz/media/icons/men_clothing.svg"
+                    - id: 26
+                      name: "Ayollar kiyimi / Женская одежда"
+                      icon: "https://admin.77.uz/media/icons/women_clothing.svg"
+
+  /store/category/:
+    get:
+      tags:
+        - store
+      operationId: store_category_list
+      description: Kategoriyalar ro'yxatini olish
+      parameters:
+        - name: limit
+          in: query
+          description: Har bir sahifada qaytariladigan natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 20
+        - name: offset
+          in: query
+          description: Natijalarni qaytarish uchun boshlang'ich indeks
+          required: false
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+              example:
+                count: 50
+                next: "https://admin.77.uz/api/v1/store/category/?limit=20&offset=20"
+                previous: null
+                results:
+                  - id: 1
+                    name: "Elektronika / Электроника"
+                    icon: "https://admin.77.uz/media/icons/electronics.svg"
+                    product_count: "15,234"
+                  - id: 2
+                    name: "Kiyim-kechak / Одежда"
+                    icon: "https://admin.77.uz/media/icons/clothing.svg"
+                    product_count: "8,567"
+
+  /store/favourite-product-by-id/{id}/delete/:
+    delete:
+      tags:
+        - store
+      operationId: store_favourite-product-by-id_delete_delete
+      description: Mahsulotni ID bo'yicha sevimlilardan olib tashlash
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 12345
+      responses:
+        '204':
+          description: Muvaffaqiyatli olib tashlandi
+        '404':
+          description: Mahsulot topilmadi
+
+  /store/favourite-product-create-by-id/:
+    post:
+      tags:
+        - store
+      operationId: store_favourite-product-create-by-id_create
+      description: Mahsulotni ID bo'yicha sevimlilarga qo'shish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavouriteProductById'
+            example:
+              device_id: "device_12345_android"
+              product: 12345
+      responses:
+        '201':
+          description: Muvaffaqiyatli qo'shildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavouriteProductResponse'
+              example:
+                id: 789
+                product: 12345
+                device_id: "device_12345_android"
+                created_at: "2024-01-15T10:30:00Z"
+        '400':
+          description: Noto'g'ri so'rov
+
+  /store/favourite-product-create/:
+    post:
+      tags:
+        - store
+      operationId: store_favourite-product-create_create
+      description: Mahsulotni sevimlilarga qo'shish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavouriteProduct'
+            example:
+              product: 12345
+      responses:
+        '201':
+          description: Muvaffaqiyatli qo'shildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavouriteProductResponse'
+              example:
+                id: 789
+                product: 12345
+                created_at: "2024-01-15T10:30:00Z"
+        '400':
+          description: Noto'g'ri so'rov
+
+  /store/favourite-product/{id}/delete/:
+    delete:
+      tags:
+        - store
+      operationId: store_favourite-product_delete_delete
+      description: Mahsulotni sevimlilardan olib tashlash
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 12345
+      responses:
+        '204':
+          description: Muvaffaqiyatli olib tashlandi
+        '404':
+          description: Mahsulot topilmadi
+
+  /store/list/ads/:
+    get:
+      tags:
+        - store
+      operationId: store_list_ads_list
+      description: Filtrlangan e'lonlar ro'yxatini olish
+      parameters:
+        - name: search
+          in: query
+          description: Qidiruv so'zi
+          required: false
+          schema:
+            type: string
+            example: "iPhone"
+        - name: price__gte
+          in: query
+          description: Minimal narx
+          required: false
+          schema:
+            type: number
+            example: 1000000
+        - name: price__lte
+          in: query
+          description: Maksimal narx
+          required: false
+          schema:
+            type: number
+            example: 20000000
+        - name: is_top
+          in: query
+          description: Top e'lonlar filtri
+          required: false
+          schema:
+            type: string
+            example: "true"
+        - name: seller_id
+          in: query
+          description: Sotuvchi ID filtri
+          required: false
+          schema:
+            type: number
+            example: 456
+        - name: district_id
+          in: query
+          description: Tuman ID filtri
+          required: false
+          schema:
+            type: number
+            example: 101
+        - name: region_id
+          in: query
+          description: Viloyat ID filtri
+          required: false
+          schema:
+            type: number
+            example: 1
+        - name: category_ids
+          in: query
+          description: Kategoriya IDlari filtri
+          required: false
+          schema:
+            type: string
+            example: "15,16,17"
+        - name: ordering
+          in: query
+          description: Saralash tartibi
+          required: false
+          schema:
+            type: string
+            example: "-published_at"
+        - name: page
+          in: query
+          description: Sahifa raqami
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: page_size
+          in: query
+          description: Har sahifadagi natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 20
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdList'
+              example:
+                count: 1250
+                next: "https://admin.77.uz/api/v1/store/list/ads/?page=2&page_size=20"
+                previous: null
+                results:
+                  - id: 12345
+                    name: "iPhone 15 Pro Max 256GB"
+                    slug: "iphone-15-pro-max-256gb"
+                    price: 15000000
+                    photo: "https://admin.77.uz/media/products/iphone15_main.jpg"
+                    published_at: "2024-01-15T10:30:00Z"
+                    address: "Toshkent shahar, Chilonzor tumani"
+                    seller:
+                      id: 456
+                      full_name: "Karimov Akmal"
+                      phone_number: "+998901234567"
+                      profile_photo: "https://admin.77.uz/media/profiles/seller_photo.jpg"
+                    is_liked: false
+                    updated_time: "2024-01-15T10:30:00Z"
+
+  /store/my-ads/:
+    get:
+      tags:
+        - store
+      operationId: store_my-ads_list
+      summary: Mening e'lonlarim ro'yxati
+      description: Joriy foydalanuvchining e'lonlarini olish
+      parameters:
+        - name: page
+          in: query
+          description: Sahifa raqami
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: page_size
+          in: query
+          description: Har sahifadagi natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: status
+          in: query
+          description: E'lon holati filtri
+          required: false
+          schema:
+            type: string
+            enum: [active, inactive, pending, rejected]
+            example: "active"
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMyAdList'
+              example:
+                count: 25
+                next: "https://admin.77.uz/api/v1/store/my-ads/?page=2&page_size=10"
+                previous: null
+                results:
+                  - id: 12345
+                    name: "iPhone 15 Pro Max 256GB"
+                    slug: "iphone-15-pro-max-256gb"
+                    price: 15000000
+                    photo: "https://admin.77.uz/media/products/iphone15_main.jpg"
+                    published_at: "2024-01-15T10:30:00Z"
+                    address: "Toshkent shahar, Chilonzor tumani"
+                    status: "active"
+                    view_count: 125
+                    is_liked: false
+                    updated_time: "2024-01-15T10:30:00Z"
+        '400':
+          description: Noto'g'ri so'rov
+
+  /store/my-ads/{id}/:
+    get:
+      tags:
+        - store
+      operationId: store_my-ads_read
+      description: Mening e'lonimni ID bo'yicha olish
+      parameters:
+        - name: id
+          in: path
+          description: E'lon ID raqami
+          required: true
+          schema:
+            type: integer
+            example: 12345
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyAdDetail'
+              example:
+                id: 12345
+                name: "iPhone 15 Pro Max 256GB Titanium"
+                slug: "iphone-15-pro-max-256gb-titanium"
+                description: "Yangi iPhone 15 Pro Max, 256GB xotira, titanium rang. Kafolat bilan."
+                category: 15
+                price: 15000000
+                photos:
+                  - "https://admin.77.uz/media/products/iphone15_main.jpg"
+                  - "https://admin.77.uz/media/products/iphone15_2.jpg"
+                published_at: "2024-01-15T10:30:00Z"
+                status: "active"
+                view_count: 125
+                updated_time: "2024-01-15T10:30:00Z"
+        '404':
+          description: E'lon topilmadi
+
+    put:
+      tags:
+        - store
+      operationId: store_my-ads_update
+      description: Mening e'lonimni yangilash
+      parameters:
+        - name: id
+          in: path
+          description: E'lon ID raqami
+          required: true
+          schema:
+            type: integer
+            example: 12345
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdUpdate'
+            example:
+              name: "iPhone 15 Pro Max 256GB Titanium (Yangilangan)"
+              category: 15
+              description: "Yangilangan tavsif: iPhone 15 Pro Max, 256GB xotira, titanium rang. Kafolat bilan."
+              price: 14500000
+              new_photos: ["https://admin.77.uz/media/products/iphone15_updated_1.jpg"]
+      responses:
+        '200':
+          description: Muvaffaqiyatli yangilandi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyAdDetail'
+        '400':
+          description: Noto'g'ri so'rov
+        '404':
+          description: E'lon topilmadi
+
+    patch:
+      tags:
+        - store
+      operationId: store_my-ads_partial_update
+      description: Mening e'lonimni qisman yangilash
+      parameters:
+        - name: id
+          in: path
+          description: E'lon ID raqami
+          required: true
+          schema:
+            type: integer
+            example: 12345
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdUpdate'
+            example:
+              name: "iPhone 15 Pro Max 256GB Titanium (Yangilangan)"
+      responses:
+        '200':
+          description: Muvaffaqiyatli yangilandi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyAdDetail'
+        '400':
+          description: Noto'g'ri so'rov
+        '404':
+          description: E'lon topilmadi
+
+    delete:
+      tags:
+        - store
+      operationId: store_my-ads_delete
+      description: Mening e'lonimni o'chirish
+      parameters:
+        - name: id
+          in: path
+          description: E'lon ID raqami
+          required: true
+          schema:
+            type: integer
+            example: 12345
+      responses:
+        '204':
+          description: Muvaffaqiyatli o'chirildi
+        '404':
+          description: E'lon topilmadi
+
+  /store/my-favourite-product-by-id/:
+    get:
+      tags:
+        - store
+      operationId: store_my-favourite-product-by-id_list
+      description: Mening sevimli mahsulotlarimni ID bo'yicha olish
+      parameters:
+        - name: page
+          in: query
+          description: Sahifa raqami
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: page_size
+          in: query
+          description: Har sahifadagi natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: device_id
+          in: query
+          description: Qurilma ID filtri
+          required: false
+          schema:
+            type: string
+            example: "device_12345_android"
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMyFavouriteProducts'
+              example:
+                count: 5
+                next: "https://admin.77.uz/api/v1/store/my-favourite-product-by-id/?page=2&page_size=10"
+                previous: null
+                results:
+                  - id: 12345
+                    name: "iPhone 15 Pro Max 256GB"
+                    slug: "iphone-15-pro-max-256gb"
+                    description: "Yangi iPhone 15 Pro Max, 256GB xotira. Kafolat bilan."
+                    price: 15000000
+                    published_at: "2024-01-15T10:30:00Z"
+                    address: "Toshkent shahar, Chilonzor tumani"
+                    seller: "Karimov Akmal"
+                    photo: "https://admin.77.uz/media/products/iphone15_main.jpg"
+                    is_liked: true
+                    updated_time: "2024-01-15T10:30:00Z"
+
+  /store/my-favourite-product/:
+    get:
+      tags:
+        - store
+      operationId: store_my-favourite-product_list
+      description: Mening sevimli mahsulotlarimni olish
+      parameters:
+        - name: page
+          in: query
+          description: Sahifa raqami
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: page_size
+          in: query
+          description: Har sahifadagi natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: category
+          in: query
+          description: Kategoriya filtri
+          required: false
+          schema:
+            type: integer
+            example: 15
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMyFavouriteProducts'
+              example:
+                count: 5
+                next: "https://admin.77.uz/api/v1/store/my-favourite-product/?page=2&page_size=10"
+                previous: null
+                results:
+                  - id: 12345
+                    name: "Samsung Galaxy S24 Ultra"
+                    slug: "samsung-galaxy-s24-ultra"
+                    description: "Eng so'nggi Samsung Galaxy S24 Ultra, S Pen bilan."
+                    price: 12500000
+                    published_at: "2024-01-10T14:20:00Z"
+                    address: "Toshkent shahar, Mirobod tumani"
+                    seller: "Karimov Akmal"
+                    photo: "https://admin.77.uz/media/products/samsung_s24_main.jpg"
+                    is_liked: true
+                    updated_time: "2024-01-10T14:20:00Z"
+
+  /store/my-search/:
+    post:
+      tags:
+        - store
+      operationId: store_my-search_create
+      description: Saqlangan qidiruvni yaratish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MySearchCreate'
+            example:
+              category: 15
+              search_query: "iPhone"
+              price_min: 1000000
+              price_max: 20000000
+              region_id: 1
+      responses:
+        '201':
+          description: Muvaffaqiyatli yaratildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MySearchResponse'
+              example:
+                id: 123
+                category: 15
+                search_query: "iPhone"
+                price_min: 1000000
+                price_max: 20000000
+                region_id: 1
+                created_at: "2024-01-15T10:30:00Z"
+        '400':
+          description: Noto'g'ri so'rov
+
+  /store/my-search/list/:
+    get:
+      tags:
+        - store
+      operationId: store_my-search_list_list
+      description: Mening saqlangan qidiruvlarimni olish
+      parameters:
+        - name: limit
+          in: query
+          description: Har bir sahifada qaytariladigan natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          description: Natijalarni qaytarish uchun boshlang'ich indeks
+          required: false
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMySearchList'
+              example:
+                count: 3
+                next: null
+                previous: null
+                results:
+                  - id: 123
+                    category:
+                      id: 15
+                      name: "Telefonlar / Телефоны"
+                      icon: "https://admin.77.uz/media/icons/phone.svg"
+                    search_query: "iPhone"
+                    price_min: 1000000
+                    price_max: 20000000
+                    region_id: 1
+                    created_at: "2024-01-15T10:30:00Z"
+
+  /store/my-search/{id}/delete/:
+    delete:
+      tags:
+        - store
+      operationId: store_my-search_delete_delete
+      description: Saqlangan qidiruvni o'chirish
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 123
+      responses:
+        '204':
+          description: Muvaffaqiyatli o'chirildi
+        '404':
+          description: Qidiruv topilmadi
+
+  /store/product-download/{slug}/:
+    get:
+      tags:
+        - store
+      operationId: store_product-download_read
+      description: Mahsulot ma'lumotlarini yuklab olish
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            format: slug
+            pattern: '^[-a-zA-Z0-9_]+$'
+            example: "iphone-15-pro-max-256gb-titanium"
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDetail'
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Mahsulot topilmadi
+
+  /store/product-image-create/:
+    post:
+      tags:
+        - store
+      operationId: store_product-image-create_create
+      description: Mahsulot rasmini yuklash
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "Yuklash uchun rasm fayli"
+                is_main:
+                  type: boolean
+                  description: "Asosiy rasm ekanligini belgilash"
+                  example: true
+                product_id:
+                  type: integer
+                  description: "Mahsulot ID raqami"
+                  example: 12345
+              required:
+                - image
+      responses:
+        '201':
+          description: Muvaffaqiyatli yuklandi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductImageCreate'
+              example:
+                id: 789
+                image: "https://admin.77.uz/media/products/uploaded_image_789.jpg"
+                is_main: true
+                product_id: 12345
+                created_at: "2024-01-15T10:30:00Z"
+        '400':
+          description: Noto'g'ri so'rov
+
+  /store/search/category-product/:
+    get:
+      tags:
+        - store
+      operationId: store_search_category-product_list
+      description: Kategoriya va mahsulotlarni qidirish
+      parameters:
+        - name: limit
+          in: query
+          description: Har bir sahifada qaytariladigan natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          description: Natijalarni qaytarish uchun boshlang'ich indeks
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: q
+          in: query
+          description: Qidiruv so'rovi
+          schema:
+            type: string
+            example: "telefon"
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSearchResults'
+              example:
+                count: 5
+                next: "https://admin.77.uz/api/v1/store/search/category-product/?limit=10&offset=10&q=telefon"
+                previous: null
+                results:
+                  - id: 15
+                    name: "Telefonlar / Телефоны"
+                    type: "category"
+                    icon: "https://admin.77.uz/media/icons/phone.svg"
+                  - id: 12345
+                    name: "iPhone 15 Pro Max"
+                    type: "product"
+                    icon: "https://admin.77.uz/media/icons/phone.svg"
+
+  /store/search/complete/:
+    get:
+      tags:
+        - store
+      operationId: store_search_complete_list
+      description: Avtomatik to'ldirish qidiruvi
+      parameters:
+        - name: limit
+          in: query
+          description: Har bir sahifada qaytariladigan natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          description: Natijalarni qaytarish uchun boshlang'ich indeks
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: q
+          in: query
+          description: Qidiruv so'rovi
+          schema:
+            type: string
+            example: "iPhone"
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSearchComplete'
+              example:
+                count: 5
+                next: null
+                previous: null
+                results:
+                  - id: 15
+                    name: "iPhone 15 Pro Max"
+                    icon: "https://admin.77.uz/media/icons/phone.svg"
+                  - id: 16
+                    name: "iPhone 14 Pro"
+                    icon: "https://admin.77.uz/media/icons/phone.svg"
+                  - id: 17
+                    name: "iPhone 13"
+                    icon: "https://admin.77.uz/media/icons/phone.svg"
+
+  /store/search/count-increase/{id}/:
+    get:
+      tags:
+        - store
+      operationId: store_search_count-increase_read
+      description: Kategoriya qidiruv sonini oshirish (id - category_id)
+      parameters:
+        - name: id
+          in: path
+          description: Kategoriya ID raqami
+          required: true
+          schema:
+            type: integer
+            example: 15
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PopularSearchIncreaseTerm'
+              example:
+                id: 1
+                category: 15
+                search_count: 1251
+                updated_at: "2024-01-15T10:30:00Z"
+
+  /store/search/populars/:
+    get:
+      tags:
+        - store
+      operationId: store_search_populars_list
+      description: Mashhur qidiruv so'zlarini olish
+      parameters:
+        - name: limit
+          in: query
+          description: Har bir sahifada qaytariladigan natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          description: Natijalarni qaytarish uchun boshlang'ich indeks
+          required: false
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPopularSearchTerms'
+              example:
+                count: 20
+                next: "https://admin.77.uz/api/v1/store/search/populars/?limit=10&offset=10"
+                previous: null
+                results:
+                  - id: 1
+                    name: "iPhone / Айфон"
+                    icon: "https://admin.77.uz/media/icons/phone.svg"
+                    search_count: 15234
+                  - id: 2
+                    name: "Samsung Galaxy / Самсунг Галакси"
+                    icon: "https://admin.77.uz/media/icons/phone.svg"
+                    search_count: 12456
+                  - id: 3
+                    name: "Noutbuk / Ноутбук"
+                    icon: "https://admin.77.uz/media/icons/laptop.svg"
+                    search_count: 9876
+                  - id: 4
+                    name: "Kiyim / Одежда"
+                    icon: "https://admin.77.uz/media/icons/clothing.svg"
+                    search_count: 8765
+
+  /store/sub-category/:
+    get:
+      tags:
+        - store
+      operationId: store_sub-category_list
+      description: Ichki kategoriyalarni olish
+      parameters:
+        - name: parent__id
+          in: query
+          description: Asosiy kategoriya ID
+          required: false
+          schema:
+            type: number
+            example: 1
+        - name: limit
+          in: query
+          description: Har bir sahifada qaytariladigan natijalar soni
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          description: Natijalarni qaytarish uchun boshlang'ich indeks
+          required: false
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Muvaffaqiyatli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+              example:
+                count: 3
+                next: null
+                previous: null
+                results:
+                  - id: 15
+                    name: "Telefonlar / Телефоны"
+                    icon: "https://admin.77.uz/media/icons/phone.svg"
+                    product_count: "15,234"
+                  - id: 16
+                    name: "Noutbuklar / Ноутбуки"
+                    icon: "https://admin.77.uz/media/icons/laptop.svg"
+                    product_count: "8,567"
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    UserProfileEdit:
+      type: object
+      properties:
+        full_name:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: To'liq ism
+          example: "Aliyev Vali Karimovich / Алиев Вали Каримович"
+        phone_number:
+          type: string
+          pattern: '^\+\d{1,15}$'
+          maxLength: 15
+          nullable: true
+          title: Telefon raqami
+          example: "+998901234567"
+        profile_photo:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+          title: Profil rasmi
+          example: "https://admin.77.uz/media/profiles/user_photo.jpg"
+        address:
+          type: integer
+          nullable: true
+          title: Manzil
+          example: 1
+
+    UserLogin:
+      type: object
+      required:
+        - phone_number
+        - password
+      properties:
+        phone_number:
+          type: string
+          minLength: 1
+          title: Telefon raqami
+          example: "+998901234567"
+        password:
+          type: string
+          minLength: 1
+          title: Parol
+          example: "mySecurePassword123"
+
+    UserRegister:
+      type: object
+      required:
+        - phone_number
+        - password
+        - password_confirm
+      properties:
+        full_name:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: To'liq ism
+          example: "Aliyev Vali Karimovich"
+        phone_number:
+          type: string
+          pattern: '^\+\d{1,15}$'
+          maxLength: 15
+          title: Telefon raqami
+          example: "+998901234567"
+        password:
+          type: string
+          minLength: 8
+          title: Parol
+          example: "mySecurePassword123"
+        password_confirm:
+          type: string
+          minLength: 8
+          title: Parolni tasdiqlash
+          example: "mySecurePassword123"
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          title: Kirish tokeni
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJleHAiOjE2MjM5MjQ4MDB9.example"
+        refresh_token:
+          type: string
+          title: Yangilash tokeni
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyNDUyOTYwMH0.example"
+        user:
+          $ref: '#/components/schemas/UserProfile'
+
+    Address:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maxLength: 250
+          minLength: 1
+          title: Nomi
+          example: "Toshkent shahar, Chilonzor tumani, Bunyodkor ko'chasi 1-uy / г. Ташкент, Чиланзарский район, ул. Бунёдкор 1"
+        lat:
+          type: number
+          nullable: true
+          title: Kenglik
+          example: 41.311081
+        long:
+          type: number
+          nullable: true
+          title: Uzunlik
+          example: 69.240562
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 123
+        full_name:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: To'liq ism
+          example: "Aliyev Vali Karimovich / Алиев Вали Каримович"
+        phone_number:
+          type: string
+          pattern: '^\+\d{1,15}$'
+          maxLength: 15
+          nullable: true
+          title: Telefon raqami
+          example: "+998901234567"
+        profile_photo:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+          title: Profil rasmi
+          example: "https://admin.77.uz/media/profiles/user_photo.jpg"
+        address:
+          $ref: '#/components/schemas/Address'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yaratilgan vaqt
+          example: "2024-01-01T00:00:00Z"
+
+    SellerRegistration:
+      type: object
+      required:
+        - address
+      properties:
+        full_name:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: To'liq ism
+          example: "Karimov Akmal Rustamovich / Каримов Акмал Рустамович"
+        project_name:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: Loyiha nomi
+          example: "TechnoMart Online Do'koni / Интернет-магазин ТехноМарт"
+        category:
+          type: integer
+          nullable: true
+          title: Kategoriya
+          example: 7
+        phone_number:
+          type: string
+          pattern: '^\+\d{1,15}$'
+          maxLength: 15
+          nullable: true
+          title: Telefon raqami
+          example: "+998971234567"
+        address:
+          $ref: '#/components/schemas/Address'
+
+    SellerRegistrationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: ID
+          example: 4321
+        full_name:
+          type: string
+          title: To'liq ism
+          example: "Karimov Akmal Rustamovich"
+        project_name:
+          type: string
+          title: Loyiha nomi
+          example: "TechnoMart Online Do'koni"
+        category_id:
+          type: integer
+          title: Kategoriya ID
+          example: 7
+        phone_number:
+          type: string
+          title: Telefon raqami
+          example: "+998971234567"
+        address:
+          type: string
+          title: Manzil
+          example: "Toshkent shahar, Mirobod tumani, Amir Temur ko'chasi 15-uy"
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+          title: Holat
+          example: "pending"
+        created_at:
+          type: string
+          format: date-time
+          title: Yaratilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    CustomTokenRefresh:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+          minLength: 1
+          title: Yangilash tokeni
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyNDUyOTYwMH0.example"
+
+    TokenRefreshResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          title: Yangi kirish tokeni
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.newAccessToken.example"
+
+    TokenVerify:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          minLength: 1
+          title: Token
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJleHAiOjE2MjM5MjQ4MDB9.example"
+
+    TokenVerifyResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          title: Token haqiqiyligi
+          example: true
+        user_id:
+          type: integer
+          title: Foydalanuvchi ID
+          example: 123
+
+    StaticPages:
+      type: object
+      required:
+        - slug
+      properties:
+        slug:
+          type: string
+          format: slug
+          pattern: '^[-a-zA-Z0-9_]+$'
+          maxLength: 50
+          minLength: 1
+          title: Slug
+          example: "about-us"
+        title:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: Sarlavha
+          example: "Biz haqimizda / О нас"
+
+    StaticPageDetail:
+      type: object
+      required:
+        - slug
+      properties:
+        slug:
+          type: string
+          format: slug
+          pattern: '^[-a-zA-Z0-9_]+$'
+          maxLength: 50
+          minLength: 1
+          title: Slug
+          example: "about-us"
+        title:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: Sarlavha
+          example: "Biz haqimizda / О нас"
+        content:
+          type: string
+          nullable: true
+          title: Mazmun
+          example: "77.uz - O'zbekistondagi eng yirik onlayn bozor. Мы крупнейший онлайн-рынок в Узбекистане."
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yaratilgan vaqt
+          example: "2024-01-01T00:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    PaginatedStaticPages:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 5
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://admin.77.uz/api/v1/common/pages/?limit=10&offset=10"
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaticPages'
+
+    RegionWithDistricts:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Toshkent shahar / г. Ташкент"
+        districts:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 101
+              name:
+                type: string
+                example: "Chilonzor tumani / Чиланзарский район"
+
+    Setting:
+      type: object
+      properties:
+        phone:
+          type: string
+          pattern: '^\+\d{1,15}$'
+          maxLength: 15
+          nullable: true
+          title: Telefon
+          example: "+998712345678"
+        support_email:
+          type: string
+          format: email
+          nullable: true
+          title: Qo'llab-quvvatlash email
+          example: "support@77.uz"
+        working_hours:
+          type: string
+          nullable: true
+          title: Ish vaqti
+          example: "Dushanba-Yakshanba 9:00-21:00 / Пн-Вс 9:00-21:00"
+        app_version:
+          type: string
+          nullable: true
+          title: Ilova versiyasi
+          example: "1.2.3"
+        maintenance_mode:
+          type: boolean
+          title: Texnik ishlar rejimi
+          example: false
+
+    AdCreate:
+      type: object
+      required:
+        - photos
+      properties:
+        name_uz:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: Nomi [uz]
+          example: "Samsung Galaxy S24 Ultra 512GB"
+        name_ru:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: Nomi [ru]
+          example: "Samsung Galaxy S24 Ultra 512GB"
+        category:
+          type: integer
+          nullable: true
+          title: Kategoriya
+          example: 15
+        description_uz:
+          type: string
+          nullable: true
+          title: Tavsif [uz]
+          example: "Eng so'nggi Samsung Galaxy S24 Ultra, 512GB xotira, S Pen bilan."
+        description_ru:
+          type: string
+          nullable: true
+          title: Tavsif [ru]
+          example: "Новейший Samsung Galaxy S24 Ultra, 512GB памяти, с S Pen."
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Narx
+          example: 12500000
+        photos:
+          type: array
+          items:
+            type: string
+            readOnly: true
+          example: ["https://admin.77.uz/media/products/samsung_s24_1.jpg", "https://admin.77.uz/media/products/samsung_s24_2.jpg"]
+
+    CategoryList:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 15
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "Telefonlar / Телефоны"
+        icon:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+          title: Ikonka
+          example: "https://admin.77.uz/media/icons/phone.svg"
+        product_count:
+          type: string
+          readOnly: true
+          title: Mahsulotlar soni
+          example: "15,234"
+
+    CategoryWithChildren:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Elektronika / Электроника"
+        icon:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://admin.77.uz/media/icons/electronics.svg"
+        children:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 15
+              name:
+                type: string
+                example: "Telefonlar / Телефоны"
+              icon:
+                type: string
+                format: uri
+                nullable: true
+                example: "https://admin.77.uz/media/icons/phone.svg"
+
+    PaginatedCategoryList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 50
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://admin.77.uz/api/v1/store/category/?limit=20&offset=20"
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryList'
+
+    FavouriteProductById:
+      type: object
+      required:
+        - product
+      properties:
+        device_id:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: Qurilma ID
+          example: "device_12345_android"
+        product:
+          type: integer
+          title: Mahsulot
+          example: 12345
+
+    FavouriteProduct:
+      type: object
+      required:
+        - product
+      properties:
+        product:
+          type: integer
+          title: Mahsulot
+          example: 12345
+
+    FavouriteProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: ID
+          example: 789
+        product:
+          type: integer
+          title: Mahsulot
+          example: 12345
+        device_id:
+          type: string
+          nullable: true
+          title: Qurilma ID
+          example: "device_12345_android"
+        created_at:
+          type: string
+          format: date-time
+          title: Yaratilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    Seller:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 456
+        full_name:
+          type: string
+          maxLength: 255
+          nullable: true
+          title: To'liq ism
+          example: "Karimov Akmal / Каримов Акмал"
+        phone_number:
+          type: string
+          pattern: '^\+\d{1,15}$'
+          maxLength: 15
+          nullable: true
+          title: Telefon raqami
+          example: "+998901234567"
+        profile_photo:
+          type: string
+          readOnly: true
+          title: Profil rasmi
+          example: "https://admin.77.uz/media/profiles/seller_photo.jpg"
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: ID
+          example: 15
+        name:
+          type: string
+          title: Nomi
+          example: "Telefonlar / Телефоны"
+
+    Ad:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 12345
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "iPhone 15 Pro Max 256GB Titanium"
+        slug:
+          type: string
+          format: slug
+          pattern: '^[-a-zA-Z0-9_]+$'
+          maxLength: 50
+          minLength: 1
+          title: Slug
+          example: "iphone-15-pro-max-256gb-titanium"
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Narx
+          example: 15000000
+        photo:
+          type: string
+          readOnly: true
+          title: Rasm
+          example: "https://admin.77.uz/media/products/iphone15_main.jpg"
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Nashr etilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+        address:
+          type: string
+          readOnly: true
+          title: Manzil
+          example: "Toshkent shahar, Chilonzor tumani / г. Ташкент, Чиланзарский район"
+        seller:
+          $ref: '#/components/schemas/Seller'
+        is_liked:
+          type: boolean
+          readOnly: true
+          title: Yoqtirilganmi
+          example: false
+        updated_time:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    AdDetail:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 12345
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "iPhone 15 Pro Max 256GB Titanium"
+        slug:
+          type: string
+          format: slug
+          pattern: '^[-a-zA-Z0-9_]+$'
+          maxLength: 50
+          minLength: 1
+          title: Slug
+          example: "iphone-15-pro-max-256gb-titanium"
+        description:
+          type: string
+          nullable: true
+          title: Tavsif
+          example: "Yangi iPhone 15 Pro Max, 256GB xotira, titanium rang. Kafolat bilan."
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Narx
+          example: 15000000
+        photos:
+          type: array
+          items:
+            type: string
+          example: ["https://admin.77.uz/media/products/iphone15_main.jpg", "https://admin.77.uz/media/products/iphone15_2.jpg"]
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Nashr etilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+        address:
+          type: string
+          readOnly: true
+          title: Manzil
+          example: "Toshkent shahar, Chilonzor tumani"
+        seller:
+          $ref: '#/components/schemas/Seller'
+        category:
+          $ref: '#/components/schemas/Category'
+        is_liked:
+          type: boolean
+          readOnly: true
+          title: Yoqtirilganmi
+          example: false
+        view_count:
+          type: integer
+          readOnly: true
+          title: Ko'rishlar soni
+          example: 125
+        updated_time:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    PaginatedAdList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 1250
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://admin.77.uz/api/v1/store/list/ads/?page=2&page_size=20"
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ad'
+
+    MyAd:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 12345
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "iPhone 15 Pro Max 256GB"
+        slug:
+          type: string
+          format: slug
+          pattern: '^[-a-zA-Z0-9_]+$'
+          maxLength: 50
+          minLength: 1
+          title: Slug
+          example: "iphone-15-pro-max-256gb"
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Narx
+          example: 15000000
+        photo:
+          type: string
+          readOnly: true
+          title: Rasm
+          example: "https://admin.77.uz/media/products/iphone15_main.jpg"
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Nashr etilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+        address:
+          type: string
+          readOnly: true
+          title: Manzil
+          example: "Toshkent shahar, Chilonzor tumani"
+        status:
+          type: string
+          enum: [active, inactive, pending, rejected]
+          title: Holat
+          example: "active"
+        view_count:
+          type: integer
+          readOnly: true
+          title: Ko'rishlar soni
+          example: 125
+        is_liked:
+          type: boolean
+          readOnly: true
+          title: Yoqtirilganmi
+          example: false
+        updated_time:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    PaginatedMyAdList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 25
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://admin.77.uz/api/v1/store/my-ads/?page=2&page_size=10"
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MyAd'
+
+    MyAdDetail:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 12345
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "iPhone 15 Pro Max 256GB Titanium"
+        slug:
+          type: string
+          format: slug
+          pattern: '^[-a-zA-Z0-9_]+$'
+          maxLength: 50
+          minLength: 1
+          title: Slug
+          example: "iphone-15-pro-max-256gb-titanium"
+        description:
+          type: string
+          nullable: true
+          title: Tavsif
+          example: "Yangi iPhone 15 Pro Max, 256GB xotira, titanium rang. Kafolat bilan."
+        category:
+          type: integer
+          nullable: true
+          title: Kategoriya
+          example: 15
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Narx
+          example: 15000000
+        photos:
+          type: array
+          items:
+            type: string
+          example: ["https://admin.77.uz/media/products/iphone15_main.jpg", "https://admin.77.uz/media/products/iphone15_2.jpg"]
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Nashr etilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+        status:
+          type: string
+          enum: [active, inactive, pending, rejected]
+          title: Holat
+          example: "active"
+        view_count:
+          type: integer
+          readOnly: true
+          title: Ko'rishlar soni
+          example: 125
+        updated_time:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    AdUpdate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "iPhone 15 Pro Max 256GB Titanium (Yangilangan)"
+        category:
+          type: integer
+          nullable: true
+          title: Kategoriya
+          example: 15
+        description:
+          type: string
+          nullable: true
+          title: Tavsif
+          example: "Yangilangan tavsif: iPhone 15 Pro Max, 256GB xotira, titanium rang. Kafolat bilan."
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Narx
+          example: 14500000
+        new_photos:
+          type: array
+          items:
+            type: string
+            readOnly: true
+          example: ["https://admin.77.uz/media/products/iphone15_updated_1.jpg", "https://admin.77.uz/media/products/iphone15_updated_2.jpg"]
+
+    MyProductById:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 12345
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "iPhone 15 Pro Max 256GB"
+        slug:
+          type: string
+          format: slug
+          pattern: '^[-a-zA-Z0-9_]+$'
+          maxLength: 50
+          minLength: 1
+          title: Slug
+          example: "iphone-15-pro-max-256gb"
+        description:
+          type: string
+          nullable: true
+          title: Tavsif
+          example: "Yangi iPhone 15 Pro Max, 256GB xotira. Kafolat bilan."
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Narx
+          example: 15000000
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Nashr etilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+        address:
+          type: string
+          readOnly: true
+          title: Manzil
+          example: "Toshkent shahar, Chilonzor tumani"
+        seller:
+          type: string
+          readOnly: true
+          title: Sotuvchi
+          example: "Karimov Akmal"
+        photo:
+          type: string
+          readOnly: true
+          title: Rasm
+          example: "https://admin.77.uz/media/products/iphone15_main.jpg"
+        is_liked:
+          type: boolean
+          readOnly: true
+          title: Yoqtirilganmi
+          example: true
+        updated_time:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    MyProduct:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 12345
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "Samsung Galaxy S24 Ultra"
+        slug:
+          type: string
+          format: slug
+          pattern: '^[-a-zA-Z0-9_]+$'
+          maxLength: 50
+          minLength: 1
+          title: Slug
+          example: "samsung-galaxy-s24-ultra"
+        description:
+          type: string
+          nullable: true
+          title: Tavsif
+          example: "Eng so'nggi Samsung Galaxy S24 Ultra, S Pen bilan."
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Narx
+          example: 12500000
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Nashr etilgan vaqt
+          example: "2024-01-10T14:20:00Z"
+        address:
+          type: string
+          readOnly: true
+          title: Manzil
+          example: "Toshkent shahar, Mirobod tumani"
+        seller:
+          type: string
+          readOnly: true
+          title: Sotuvchi
+          example: "Karimov Akmal"
+        photo:
+          type: string
+          readOnly: true
+          title: Rasm
+          example: "https://admin.77.uz/media/products/samsung_s24_main.jpg"
+        is_liked:
+          type: boolean
+          readOnly: true
+          title: Yoqtirilganmi
+          example: true
+        updated_time:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan vaqt
+          example: "2024-01-10T14:20:00Z"
+
+    PaginatedMyFavouriteProducts:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 5
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://admin.77.uz/api/v1/store/my-favourite-product/?page=2&page_size=10"
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MyProduct'
+
+    MySearchCreate:
+      type: object
+      properties:
+        category:
+          type: integer
+          nullable: true
+          title: Kategoriya
+          example: 15
+        search_query:
+          type: string
+          nullable: true
+          title: Qidiruv so'rovi
+          example: "iPhone"
+        price_min:
+          type: integer
+          nullable: true
+          title: Minimal narx
+          example: 1000000
+        price_max:
+          type: integer
+          nullable: true
+          title: Maksimal narx
+          example: 20000000
+        region_id:
+          type: integer
+          nullable: true
+          title: Viloyat ID
+          example: 1
+
+    MySearchResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: ID
+          example: 123
+        category:
+          type: integer
+          nullable: true
+          title: Kategoriya
+          example: 15
+        search_query:
+          type: string
+          nullable: true
+          title: Qidiruv so'rovi
+          example: "iPhone"
+        price_min:
+          type: integer
+          nullable: true
+          title: Minimal narx
+          example: 1000000
+        price_max:
+          type: integer
+          nullable: true
+          title: Maksimal narx
+          example: 20000000
+        region_id:
+          type: integer
+          nullable: true
+          title: Viloyat ID
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          title: Yaratilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    MySearchDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: ID
+          example: 123
+        category:
+          $ref: '#/components/schemas/CategoryList'
+        search_query:
+          type: string
+          nullable: true
+          title: Qidiruv so'rovi
+          example: "iPhone"
+        price_min:
+          type: integer
+          nullable: true
+          title: Minimal narx
+          example: 1000000
+        price_max:
+          type: integer
+          nullable: true
+          title: Maksimal narx
+          example: 20000000
+        region_id:
+          type: integer
+          nullable: true
+          title: Viloyat ID
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          title: Yaratilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    PaginatedMySearchList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 3
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MySearchDetail'
+
+    ProductImageCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 789
+        image:
+          type: string
+          format: uri
+          readOnly: true
+          title: Rasm
+          example: "https://admin.77.uz/media/products/uploaded_image_789.jpg"
+        is_main:
+          type: boolean
+          title: Asosiy rasm
+          example: true
+        product_id:
+          type: integer
+          title: Mahsulot ID
+          example: 12345
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yaratilgan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    SearchComplete:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 15
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "iPhone 15 Pro Max"
+        icon:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+          title: Ikonka
+          example: "https://admin.77.uz/media/icons/phone.svg"
+
+    SearchResult:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 15
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "Telefonlar / Телефоны"
+        type:
+          type: string
+          enum: [category, product]
+          title: Turi
+          example: "category"
+        icon:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+          title: Ikonka
+          example: "https://admin.77.uz/media/icons/phone.svg"
+
+    PaginatedSearchResults:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 5
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://admin.77.uz/api/v1/store/search/category-product/?limit=10&offset=10&q=telefon"
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+
+    PaginatedSearchComplete:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 5
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchComplete'
+
+    PopularSearchIncreaseTerm:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 1
+        category:
+          type: integer
+          nullable: true
+          title: Kategoriya
+          example: 15
+        search_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Qidiruv soni
+          example: 1250
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan vaqt
+          example: "2024-01-15T10:30:00Z"
+
+    PopularSearchTerm:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: ID
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Nomi
+          example: "iPhone / Айфон"
+        icon:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+          title: Ikonka
+          example: "https://admin.77.uz/media/icons/phone.svg"
+        search_count:
+          type: integer
+          readOnly: true
+          title: Qidiruv soni
+          example: 15234
+
+    PaginatedPopularSearchTerms:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 20
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://admin.77.uz/api/v1/store/search/populars/?limit=10&offset=10"
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PopularSearchTerm'
