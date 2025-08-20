@@ -1,0 +1,5 @@
+msgid ""
+msgstr ""
+"Language: uz\n"
+
+# placeholder translations
