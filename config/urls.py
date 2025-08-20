@@ -1,35 +1,72 @@
-from django.contrib import admin
-from django.urls import path, include
-from django.conf import settings
 from django.conf.urls.static import static
-from drf_spectacular.views import (
-    SpectacularAPIView, 
-    SpectacularSwaggerView, 
-    SpectacularRedocView
+from django.contrib import admin
+from django.urls import include, path, re_path
+from drf_yasg import openapi
+from drf_yasg.generators import OpenAPISchemaGenerator
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+
+from config.settings import (
+    base as settings,
+    django_settings_module,
+)
+
+
+class BothHttpAndHttpsSchemaGenerator(OpenAPISchemaGenerator):
+    def get_schema(self, request=None, public=False):
+        schema = super().get_schema(request, public)
+        schema.schemes = ["http"] if django_settings_module == "development" else ["https"]
+        return schema
+
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="dxrkn1ght's Project API",
+        default_version="v1",
+        description="API for online store website",
+        terms_of_service="https://webresumekomron/terms/",
+        contact=openapi.Contact(email="info@kevin.uz"),
+        license=openapi.License(name="MIT License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+    generator_class=BothHttpAndHttpsSchemaGenerator,
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    
-    # API endpoints
-    path('api/v1/', include('apps.accounts.urls')),
-    path('api/v1/', include('apps.store.urls')),
-    path('api/v1/', include('apps.common.urls')),
-    
-    # API Documentation
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    
-    # Root redirect to docs
-
+    path("default-admin-panel/", admin.site.urls),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += [
+    path("api/v1/common/", include("common.urls"), name="common"),
+    path("api/v1/accounts/", include("accounts.urls"), name="accounts"),
+    path("api/v1/store/", include("store.urls"), name="store"),
+]
 
-# Custom admin site configuration
-admin.site.site_header = "77.uz Marketplace Admin"
-admin.site.site_title = "77.uz Admin"
-admin.site.index_title = "Marketplace Administration"
+if django_settings_module == "development":
+    urlpatterns += [
+        path("__debug__/", include("debug_toolbar.urls")),
+    ]
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [
+        path(
+            "swagger/",
+            schema_view.with_ui("swagger", cache_timeout=0),
+            name="schema-swagger-ui",
+        ),
+        path(
+            "redoc/",
+            schema_view.with_ui("redoc", cache_timeout=0),
+            name="schema-redoc",
+        ),
+        re_path(
+            r"^swagger(?P<format>\.json|\.yaml)$",
+            schema_view.without_ui(cache_timeout=0),
+            name="schema-json",
+        ),
+        path("chaining/", include("smart_selects.urls")),
+    ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
