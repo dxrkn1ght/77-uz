@@ -57,6 +57,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = [RoleFilter, 'is_active', 'is_verified', 'created_at']
     search_fields = ['phone_number', 'full_name', 'address__name']
     ordering = ['-created_at']
+    list_select_related = ['address']
     list_per_page = 25
 
     fieldsets = (

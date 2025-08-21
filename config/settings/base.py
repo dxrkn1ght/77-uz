@@ -281,12 +281,11 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 # SPECTACULAR_SETTINGS
 SPECTACULAR_SETTINGS = {
     'TITLE': '77.uz Marketplace API',
-    'DESCRIPTION': '''
-    Bu hujjat API ro'yxatini ko'rsatadi va ularni tekshirish imkoniyatini beradi.
-    
-    ## Autentifikatsiya
-    
-    API JWT (JSON Web Token) autentifikatsiyasidan foydalanadi. Login qilgandan so'ng olingan access_token ni har bir so'rovda Authorization header orqali yuboring:
-    ''',
+    'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': r'/api/v1',
+    'SECURITY': [
+        {'jwtAuth': []},
+    ],
 }

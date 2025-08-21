@@ -256,6 +256,7 @@ class AdAdmin(TabbedTranslationAdmin if TRANSLATION_AVAILABLE else admin.ModelAd
 class AdPhotoAdmin(admin.ModelAdmin):
     list_display = ['ad', 'image_preview', 'order', 'created_at']
     list_filter = ['created_at']
+    list_select_related = ['category', 'seller']
     raw_id_fields = ['ad']
     ordering = ['ad', 'order']
 
@@ -277,6 +278,7 @@ class AdPhotoAdmin(admin.ModelAdmin):
 class AdLikeAdmin(admin.ModelAdmin):
     list_display = ['user', 'ad', 'created_at']
     list_filter = ['created_at']
+    list_select_related = ['category', 'seller']
     raw_id_fields = ['user', 'ad']
     readonly_fields = ['created_at']
 
@@ -285,6 +287,7 @@ class AdLikeAdmin(admin.ModelAdmin):
 class AdViewAdmin(admin.ModelAdmin):
     list_display = ['ad', 'user', 'ip_address', 'created_at']
     list_filter = ['created_at']
+    list_select_related = ['category', 'seller']
     raw_id_fields = ['user', 'ad']
     readonly_fields = ['created_at']
 

@@ -39,4 +39,5 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
         
         # Write permissions only to the owner
-        return obj.user == request.user
+        owner = getattr(obj, 'user', None) or getattr(obj, 'seller', None)
+        return owner == request.user
