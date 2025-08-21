@@ -1,100 +1,89 @@
-# 🛒 77-UZ Marketplace
+# 77.uz Marketplace API Documentation
 
-Modern Django-based **Marketplace Platform** built with **Django 5**, **Django REST Framework (DRF)**, and **drf_yasg (Swagger UI)** for API documentation.  
+## Overview
 
-## 🚀 Features
-- ✅ Custom **User model** with multiple roles (Super Admin, Admin, Seller, Buyer)
-- ✅ **Authentication system** (Login, Logout, JWT-ready structure)
-- ✅ **Accounts app** with extended User profiles
-- ✅ **Common Address model** with relation to Users
-- ✅ **Django Admin panel customization**
-- ✅ **Swagger API Docs** (`drf_yasg`)
-- ✅ Database migrations support
+Bu loyiha — onlayn savdo platformasi bo'lib, foydalanuvchilarga mahsulotlarni qo'shish, sotish va xarid qilish imkoniyatini beradi.
 
----
+## API Documentation
 
-## 📂 Project Structure
-```
-77-uz/
-│── apps/
-│   ├── accounts/       # Custom User model & auth logic
-│   ├── common/         # Shared models (Address, etc.)
-│── config/             # Main Django settings & urls
-│── manage.py           # Django CLI
-│── requirements.txt    # Dependencies
-```
+### Swagger UI
+- **URL**: `/api/d![img.png](img.png)ocs/`
+- **Description**: Interactive API documentation with request/response examples
 
----
+### ReDoc
+- **URL**: `/api/redoc/`![img_1.png](img_1.png)
+- **Description**: Alternative documentation interface
 
-## ⚙️ Installation & Setup
+### OpenAPI Schema
+- **URL**: `/api/schema/`
+- **Description**: Raw OpenAPI 3.0 schema in JSON format
 
-### 1️⃣ Clone repository
-```bash
-git clone https://github.com/dxrkn1ght/77-uz.git
-cd 77-uz
-```
+## Authentication
 
-### 2️⃣ Create virtual environment
-```bash
-python -m venv .venv
-source .venv/bin/activate   # Linux & Mac
-.venv\Scripts\activate      # Windows
-```
+API JWT (JSON Web Token) authentication ishlatadi:
 
-### 3️⃣ Install dependencies
-```bash
-pip install -r requirements.txt
-```
+\`\`\`bash
+# Login
+curl -X POST http://localhost:8000/api/v1/accounts/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"phone_number": "+998901234567", "password": "password123"}'
 
-### 4️⃣ Apply migrations
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
+# Use token in requests
+curl -X GET http://localhost:8000/api/v1/accounts/me/ \
+  -H "Authorization: Bearer <access_token>"
+\`\`\`
 
-### 5️⃣ Create superuser
-```bash
-python manage.py createsuperuser
-```
+## User Roles
 
-### 6️⃣ Run server
-```bash
-python manage.py runserver
-```
+1. **super_admin**: Barcha modullarga to'liq kirish
+2. **admin**: Sotuvchilarni qo'shish, ularga login-parol yaratish
+3. **seller**: Mahsulot qo'shish va o'chirish
+4. **user**: Oddiy foydalanuvchi
 
----
+## API Endpoints
 
-## 📖 API Documentation
-Swagger UI is available at:  
-👉 [http://127.0.0.1:8000/swagger/](http://127.0.0.1:8000/swagger/)  
+### Authentication
+- `POST /api/v1/accounts/login/` - User login
+- `POST /api/v1/accounts/register/` - User registration
+- `GET /api/v1/accounts/me/` - Get current user profile
+- `PUT /api/v1/accounts/edit/` - Update user profile
 
-ReDoc alternative:  
-👉 [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
+### Store
+- `GET /api/v1/store/categories/` - List categories
+- `GET /api/v1/store/ads/` - List advertisements
+- `POST /api/v1/store/ads/` - Create advertisement
+- `GET /api/v1/store/ads/{slug}/` - Get advertisement details
 
----
+### Admin
+- `GET /api/v1/admin/users/` - List users (admin only)
+- `POST /api/v1/admin/sellers/register/` - Register seller (admin only)
 
-## 🛠 Tech Stack
-- **Backend:** Django 5, Django REST Framework
-- **Database:** PostgreSQL / SQLite (dev)
-- **Docs:** drf_yasg (Swagger & Redoc)
-- **Auth:** Custom User + Roles
+## Error Handling
 
----
+API standart HTTP status kodlarini ishlatadi:
 
-## 📌 Notes
-- Make sure `accounts.User` is set as the default user model in `settings.py`:
-  ```python
-  AUTH_USER_MODEL = "accounts.User"
-  ```
-- If you face migration conflicts, reset them:
-  ```bash
-  python manage.py migrate --fake accounts zero
-  python manage.py makemigrations
-  python manage.py migrate
-  ```
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `401` - Unauthorized
+- `403` - Forbidden
+- `404` - Not Found
+- `429` - Too Many Requests
+- `500` - Internal Server Error
 
----
+## Rate Limiting
 
-## 👨‍💻 Author
-**Komronbek Zubaydullayev**  
-💼 Backend Developer | Django & DRF | REST APIs  
+API rate limiting qo'llaydi:
+- Authenticated users: 1000 requests/hour
+- Anonymous users: 100 requests/hour
+
+## Localization
+
+API ikki tilda ishlaydi:
+- `uz` - O'zbek tili (default)
+- `ru` - Rus tili
+
+
+Accept-Language header orqali tilni belgilang:
+\`\`\`
+Accept-Language: ru
